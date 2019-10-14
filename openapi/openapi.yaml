@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: Bus Ticket Booking API
+  description: |
+    API description for Ticket Booking application. Client and server will integrate with each other via REST API. By default data will be format in `application/json`.
+
+    ## I. Data response format
+        ### Data in error response from server has format:
+        ```
+        {
+          statusCode: number,
+          message: string,
+          body: object | array,
+          errors: arrays
+        }
+        ```
+        - Reponse error code `400`, `403`, `404`, `422`, `503`
+        - Response success code `200`, `201`
+
+  version: 0.1.0
+
+tags:
+  - name: "ticket"
+    description: "APIs related to ticket object"
+
+servers:
+  - url: 'http://localhost:5000/api'
+
+paths:
+  /tickets:
+    post:
+      summary: "Book ticket"
+      tags:
+        - "ticket"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTicket'
+            example:
+              ticketNumber: "0584"
+              routeId: "41"
+              bookDate: "14/11/19"
+              bookTime: "14:00"
+              firstName: "Walter"
+              lastName: "White"
+              identityCardNumber: "0247895"
+      responses:
+        '201':
+          description: "Ticket created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+              example:
+                id: 1
+                ticketNumber: "0584"
+                routeId: "41"
+                bookDate: "14/11/19"
+                bookTime: "14:00"
+                firstName: "Walter"
+                lastName: "White"
+                identityCardNumber: "0247895"
+        '422':
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                error:
+                  statusCode: 422
+                  body: TODO ADD
+                  message: Ticket Number is required
+
+  /tickets/{ticket_id}:
+    get:
+      summary: "Get one ticket by id"
+      tags:
+        - "ticket"
+      parameters:
+        - in: "path"
+          name: "ticket_id"
+          required: true
+          schema:
+            type: string
+          description: "id of ticket need to get detail"
+      responses:
+        '200':
+          description: Get detail ticket success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '404':
+          $ref: '#/components/schemas/NotFoundError'
+    put:
+      summary: "Confirm Ticket"
+      description: "Endpoint to make final changes and confirm booking"
+      tags:
+        - "ticket"
+      parameters:
+        - in: "path"
+          name: "ticket_id"
+          required: true
+          schema:
+            type: string
+          description: "id of ticket need to get detail"
+      responses:
+        '200':
+          description: "Confirm ticket success"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '422':
+          $ref: '#/components/schemas/ValidationError'
+        '400':
+          description: 'Bad Request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+
+components:
+  schemas:
+    Ticket:
+      properties:
+        id:
+          type: number
+        ticketNumber:
+          type: string
+        routeId:
+          type: string
+        bookDate:
+          type: string
+        bookTime:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        identityCardNumber:
+          type: string
+        isConfirmed:
+          type: boolean
+          default: false
+
+    NewTicket:
+      properties:
+        ticketNumber:
+          type: string
+        routeId:
+          type: string
+        bookDate:
+          type: string
+        bookTime:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        identityCardNumber:
+          type: string
+      required:
+        - ticketNumber
+        - routeId
+        - bookDate
+        - bookTime
+        - firstName
+        - lastName
+        - identityCardNumber
+
+    ValidationError:
+      properties:
+        statusCode:
+          type: number
+          default: 422
+        body:
+          $ref: "#/components/schemas/NewTicket"
+        message:
+          type: string
+          default: "Request didn't pass validation"
+        errors:
+          type: array
+
+    BadRequestError:
+      properties:
+        statusCode:
+          type: number
+          default: 400
+        body:
+          $ref: "#/components/schemas/NewTicket"
+        message:
+          type: string
+          default: "Ticket has already been booked"
+        errors:
+          type: array
+
+    NotFoundError:
+      properties:
+        statusCode:
+          type: number
+          default: 404
+        body:
+          $ref: "#/components/schemas/NewTicket"
+        message:
+          type: string
+          default: "Ticket not found"
+        errors:
+          type: array

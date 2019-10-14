@@ -6,10 +6,9 @@ export class TicketService {
     public async create(ticket: ITicket): Promise<ITicket> {
         const [existingTicket]: any = await models.Ticket.findAll({
             where: {
-                ticketNumber: ticket.ticketNumber,
+                routeId: ticket.routeId,
                 identityCardNumber: ticket.identityCardNumber,
-                bookDate: ticket.bookDate,
-                bookTime: ticket.bookTime,
+                date: ticket.date
             },
             raw: true
         });
@@ -22,16 +21,16 @@ export class TicketService {
             }
         }
 
-        return models.Ticket.create(ticket);
+        return models.Ticket.build(ticket).save();
     }
 
-    public async findById(id: string | number): Promise<ITicket> {
-        return models.Ticket.findByPk(id);
+    public async findById(uuid: string | number): Promise<ITicket> {
+        return models.Ticket.findByPk(uuid);
     }
 
-    public async update(id: string | number, attributes: ITicketUpdate): Promise<ITicket> {
+    public async update(uuid: string | number, attributes: ITicketUpdate): Promise<ITicket> {
         const [updated, [ticket]] = await models.Ticket.update(attributes, {
-            where: { id },
+            where: { uuid },
             returning: true,
             raw: true
         });
@@ -39,5 +38,3 @@ export class TicketService {
         return updated ? ticket : null;
     }
 }
-
-export default new TicketService();

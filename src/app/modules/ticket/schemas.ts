@@ -3,19 +3,7 @@ import { required } from '../../helpers/helperMethods';
 export default {
     save: {
         validation: {
-            ticketNumber: {
-                in: 'body',
-                notEmpty: {
-                    errorMessage: required('Ticket Number')
-                }
-            },
-            bookDate: {
-                in: 'body',
-                notEmpty: {
-                    errorMessage: required('Book Date')
-                }
-            },
-            bookTime: {
+            date: {
                 in: 'body',
                 notEmpty: {
                     errorMessage: required('Book Date')

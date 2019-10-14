@@ -1,9 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { ITicket, ITicketUpdate } from '../../../interfaces/models';
 import { CREATED_CODE, SUCCESS_CODE } from '../../configs/status-codes';
-import TicketService from '../../services/ticket.service';
+import { TicketService } from '../../services';
 import { BadRequest, NotFound } from '../../errors';
 import { notExists } from '../../helpers/helperMethods';
+import { randomBytes } from 'crypto';
+
+const ticketService: TicketService = new TicketService();
 
 export class TicketController {
     public async bookTicket(req: Request, res: Response, next: NextFunction): Promise<Response> {
@@ -11,15 +14,13 @@ export class TicketController {
         try {
             const data: any = {
                 routeId: payload.routeId,
-                ticketNumber: payload.ticketNumber,
-                bookDate: payload.bookDate,
-                bookTime: payload.bookTime,
+                date: payload.date,
                 firstName: payload.firstName,
                 lastName: payload.lastName,
                 identityCardNumber: payload.identityCardNumber
             };
 
-            const ticket: ITicket = await TicketService.create(data);
+            const ticket: ITicket = await ticketService.create(data);
 
             return res.status(CREATED_CODE).json(ticket);
         } catch (e) {
@@ -30,7 +31,7 @@ export class TicketController {
     public async confirmBook(req: Request, res: Response, next: NextFunction): Promise<Response> {
         const payload: ITicket = req.body;
         try {
-            const ticket: ITicket = await TicketService.findById(req.params.id);
+            const ticket: ITicket = await ticketService.findById(req.params.id);
 
             if (!ticket) {
                 throw new NotFound(notExists('ticket'));
@@ -39,17 +40,15 @@ export class TicketController {
             }
 
             const data: ITicketUpdate = {
-                ticketNumber: payload.ticketNumber,
                 routeId: payload.routeId,
-                bookDate: payload.bookDate,
-                bookTime: payload.bookTime,
+                date: payload.date,
                 firstName: payload.firstName,
                 lastName: payload.lastName,
                 identityCardNumber: payload.identityCardNumber,
                 isConfirmed: true
             };
 
-            const updatedTicket: ITicket = await TicketService.update(ticket.id, data);
+            const updatedTicket: ITicket = await ticketService.update(ticket.uuid, data);
 
 
             return res.status(CREATED_CODE).json(updatedTicket);
@@ -60,7 +59,7 @@ export class TicketController {
 
     public async getTicket(req: Request, res: Response, next: NextFunction): Promise<Response> {
         try {
-            const ticket: ITicket = await TicketService.findById(req.params.id);
+            const ticket: ITicket = await ticketService.findById(req.params.id);
 
             if (!ticket) {
                 throw new NotFound(notExists('ticket'));

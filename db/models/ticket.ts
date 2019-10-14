@@ -7,24 +7,29 @@ type StaticTicket = typeof Model & {
 
 export default (sequelize: Sequelize) => {
     return <StaticTicket> sequelize.define('tickets', {
-        ticketNumber: {
-            type: DataTypes.STRING,
+        uuid: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV1,
             allowNull: false,
+            primaryKey: true,
             unique: true
+        },
+        ticketNumber: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            allowNull: false
         },
         // This a foreign key but the table is not ready / created
         routeId: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        // Type string is appropriate for testing
-        bookDate: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        bookTime: {
-            type: DataTypes.STRING,
-            allowNull: false
+        date: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            validate: {
+                isDate: true
+            }
         },
         firstName: {
             type: DataTypes.STRING,

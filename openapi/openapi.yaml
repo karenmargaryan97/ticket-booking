@@ -39,10 +39,8 @@ paths:
             schema:
               $ref: '#/components/schemas/NewTicket'
             example:
-              ticketNumber: "0584"
               routeId: "41"
-              bookDate: "14/11/19"
-              bookTime: "14:00"
+              date: "14/11/19"
               firstName: "Walter"
               lastName: "White"
               identityCardNumber: "0247895"
@@ -54,13 +52,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Ticket'
               example:
-                id: 1
-                ticketNumber: "0584"
+                uuid: "d5ea55c0-ee8b-11e9-9507-e71fdbe11118"
+                ticketNumber: 1
                 routeId: "41"
-                bookDate: "14/11/19"
-                bookTime: "14:00"
+                date: "14/11/19"
                 firstName: "Walter"
                 lastName: "White"
+                isConfirmed: false
                 identityCardNumber: "0247895"
         '422':
           description: "Validation error"
@@ -74,18 +72,18 @@ paths:
                   body: TODO ADD
                   message: Ticket Number is required
 
-  /tickets/{ticket_id}:
+  /tickets/{ticket_uuid}:
     get:
-      summary: "Get one ticket by id"
+      summary: "Get one ticket by uuid"
       tags:
         - "ticket"
       parameters:
         - in: "path"
-          name: "ticket_id"
+          name: "ticket_uuid"
           required: true
           schema:
             type: string
-          description: "id of ticket need to get detail"
+          description: "uuid of ticket need to get detail"
       responses:
         '200':
           description: Get detail ticket success
@@ -102,11 +100,11 @@ paths:
         - "ticket"
       parameters:
         - in: "path"
-          name: "ticket_id"
+          name: "ticket_uuid"
           required: true
           schema:
             type: string
-          description: "id of ticket need to get detail"
+          description: "uuid of ticket need to get detail"
       responses:
         '200':
           description: "Confirm ticket success"
@@ -127,15 +125,13 @@ components:
   schemas:
     Ticket:
       properties:
-        id:
-          type: number
-        ticketNumber:
+        uuid:
           type: string
+        ticketNumber:
+          type: number
         routeId:
           type: string
-        bookDate:
-          type: string
-        bookTime:
+        date:
           type: string
         firstName:
           type: string
@@ -149,13 +145,9 @@ components:
 
     NewTicket:
       properties:
-        ticketNumber:
-          type: string
         routeId:
           type: string
-        bookDate:
-          type: string
-        bookTime:
+        date:
           type: string
         firstName:
           type: string
@@ -164,7 +156,6 @@ components:
         identityCardNumber:
           type: string
       required:
-        - ticketNumber
         - routeId
         - bookDate
         - bookTime

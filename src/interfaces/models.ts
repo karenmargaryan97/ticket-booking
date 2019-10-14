@@ -1,10 +1,9 @@
 import { Model } from 'sequelize';
 
 export interface ITicket extends Model {
-    readonly id: number;
-    ticketNumber: string;
-    bookDate: Date;
-    bookTime: string;
+    readonly uuid: string;
+    readonly ticketNumber: number;
+    date: Date;
     firstName: string;
     lastName: string;
     identityCardNumber: string;
@@ -13,9 +12,8 @@ export interface ITicket extends Model {
 }
 
 export interface ITicketUpdate {
-    ticketNumber: string;
-    bookDate?: Date;
-    bookTime?: string;
+    ticketNumber?: number;
+    date?: Date;
     firstName?: string;
     lastName?: string;
     identityCardNumber?: string;

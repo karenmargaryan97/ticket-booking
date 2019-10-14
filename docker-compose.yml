@@ -9,9 +9,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - ticket-net
   server:
